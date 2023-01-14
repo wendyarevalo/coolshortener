@@ -1,0 +1,45 @@
+version: "3.9"
+services:
+  db:
+    image: "postgres"
+    container_name: "cool-db"
+    restart: always
+    env_file:
+      - project.env
+    ports:
+      - '5434:5432'
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+      - ./init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+  flask:
+    build:
+      context: .
+      dockerfile: coolshortflask/Dockerfile
+    image: "cool-flask:v1"
+    container_name: "cool-flask"
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+  express:
+    build:
+      context: .
+      dockerfile: coolshortexpress/Dockerfile
+    image: "cool-express:v1"
+    container_name: "cool-express"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+  koa:
+    build:
+      context: .
+      dockerfile: coolshortkoa/Dockerfile
+    image: "cool-koa:v1"
+    container_name: "cool-koa"
+    ports:
+      - "3001:3001"
+    depends_on:
+      - db
+
+
